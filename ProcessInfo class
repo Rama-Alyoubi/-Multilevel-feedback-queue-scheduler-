@@ -1,0 +1,49 @@
+
+package Projects;
+public class ProcessInfo implements Comparable<ProcessInfo>{
+	
+	public int arrivalTime,burstTime,waitingTime,turnaroundTime,remainingTime,endTime,responseTime;
+	public String processName;
+	public ProcessInfo() {
+		
+		
+	}
+	public ProcessInfo(String name,int AT,int BT) {
+		processName=name;
+		arrivalTime = AT;
+		burstTime =BT;
+		
+	}
+	public ProcessInfo(String name,int AT,int BT,int RT,int ET) {
+		processName=name;
+		arrivalTime = AT;
+		burstTime =BT;
+		remainingTime=RT;
+		endTime=ET;
+		
+		
+	}
+	public ProcessInfo(String name,int AT,int BT,int RT) {
+		processName=name;
+		arrivalTime = AT;
+		burstTime =BT;
+		remainingTime=RT;
+		
+		
+		
+	}
+	@Override
+	public int compareTo(ProcessInfo pi)
+    {
+        if (arrivalTime > pi.arrivalTime) {
+            return 1;
+        }
+        else if (arrivalTime == pi.arrivalTime) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
+	
+}
+}
