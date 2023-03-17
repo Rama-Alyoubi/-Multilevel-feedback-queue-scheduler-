@@ -1,0 +1,327 @@
+//Rama Mohammed Alyoubi 
+
+package Projects;
+import java.util.*; 
+public class Main {
+	
+	static Queue<ProcessInfo> queue0 = new LinkedList<ProcessInfo>();
+	static Queue<ProcessInfo> queue1 = new LinkedList<ProcessInfo>();
+	static Queue<ProcessInfo> queue2 = new LinkedList<ProcessInfo>();
+	static int count_Q1,count_Q2,flag,totalWait1,totalWait2,totalWait3,numOfProcess,AT,BT;
+	static int total_troughput,arriv,total_burst_forEach,preEndTime,preTurnaroundTime;
+	
+	public static void main(String[] args) {
+		
+		boolean validint=true;
+		Scanner keyboard=new Scanner(System.in);
+		do {
+			try {
+					System.out.println("Enter number of processes:");
+					numOfProcess=keyboard.nextInt();
+					validint=false;
+				
+				
+				
+			}catch(InputMismatchException e) {
+				System.out.println("Invalid input \n");
+				keyboard.next ();
+			}
+			if(numOfProcess<=0) {
+				
+				System.out.println("Invalid input \n");
+			}
+			
+		}while(validint==true||numOfProcess<=0);
+			
+		
+		
+		
+
+		for (int i=0;i<numOfProcess;i++) {
+			do {
+				try {
+						System.out.printf("Enter P%d arrival time:\n",i+1);
+						AT=keyboard.nextInt();
+						validint=false;
+					
+					
+					
+				}catch(InputMismatchException e) {
+					System.out.println("Invalid input \n");
+					keyboard.next ();
+				}
+				if(AT<0) {
+					
+					System.out.println("Invalid input \n");
+				}
+				
+			}while(validint==true||AT<0);
+			do {
+				try {
+						System.out.printf("Enter P%d burst time:\n",i+1);
+						BT=keyboard.nextInt();
+						validint=false;
+					
+					
+					
+				}catch(InputMismatchException e) {
+					System.out.println("Invalid input \n");
+					keyboard.next ();
+				}
+				if(BT<=0) {
+					
+					System.out.println("Invalid input \n");
+				}
+				
+			}while(validint==true||BT<=0);
+			
+			
+			
+			String name= "p"+i;
+			queue0.add(new ProcessInfo(name,AT,BT));
+			total_troughput+=((LinkedList<ProcessInfo>) queue0).get(i).remainingTime=((LinkedList<ProcessInfo>) queue0).get(i).burstTime;
+		}
+		
+		for (ProcessInfo i : queue0) {
+            System.out.println("Process name:  "+i.processName + "\t"+"Process arrival time:  "+i.arrivalTime );
+        }
+		
+		Collections.sort((List<ProcessInfo>) queue0);
+		
+		System.out.println("\n\t\tAfter sorting\n");
+		
+		for (ProcessInfo p : queue0) {
+            System.out.println("Process name:  "+p.processName + "\t"+"Process arrival time:  "+p.arrivalTime );
+		}
+			
+			
+			
+			System.out.println("\n");
+			System.out.println("First Queue:\n Round Robin with time quantum 8 milliseconds");
+			System.out.println("-------------------------------------------------------------");
+			
+			flag=firstQueue(numOfProcess);
+			
+			if(flag==1) {
+				System.out.println("\n");
+				System.out.println("Second Queue:\n Round Robin with time quantum 16 milliseconds");
+				System.out.println("-------------------------------------------------------------");
+				flag=secondQueue(count_Q1);
+				
+			}
+			
+			if(flag==2) {
+				System.out.println("\n");
+				System.out.println("Last Queue:\n First Come First Served ");
+				System.out.println("--------------------------------------");
+				
+				thirdQueue(count_Q2);
+			
+				
+			}
+			System.out.println("");
+			System.out.println("---------------------------");
+			System.out.println("");
+			System.out.println("average waiting time for all queues: "+((totalWait1+totalWait2+totalWait3)/(double)(numOfProcess)));
+			System.out.println("throughput time for all queues: "+(numOfProcess/(double)(total_troughput)));
+	}
+	public static int firstQueue(int numOfProcess) {
+		for(int i=0;i<numOfProcess;i++) {
+			
+			System.out.println("Process "+queue0.peek().processName +" informations: " +"\nProcess burst time  "+queue0.peek().burstTime
+					+"\nProcess turnaround time  "+queue0.peek().turnaroundTime +"\nProcess waiting time  "+queue0.peek().waitingTime
+					+"\nProcess remaining time  "+queue0.peek().remainingTime+"\nProcess response time  "+queue0.peek().responseTime);
+			
+		            System.out.println("\n+++++\n");
+		            
+			if ((((LinkedList<ProcessInfo>) queue0).peek().burstTime)<=8) {
+				if(i==0) {
+					total_burst_forEach+=preTurnaroundTime=queue0.peek().turnaroundTime=queue0.peek().burstTime;
+					preEndTime=queue0.peek().endTime=queue0.peek().burstTime;
+					queue0.peek().waitingTime=0;
+					queue0.peek().remainingTime=0;
+					queue0.peek().responseTime=queue0.peek().arrivalTime;
+					
+					
+					
+				}else {
+					arriv=queue0.peek().arrivalTime;
+					queue0.peek().arrivalTime=0;
+					queue0.peek().remainingTime=0;
+					preEndTime=queue0.peek().endTime=preEndTime+queue0.peek().burstTime;
+					total_burst_forEach+=queue0.peek().burstTime;
+					preTurnaroundTime=queue0.peek().turnaroundTime=queue0.peek().endTime-queue0.peek().arrivalTime;
+					totalWait1+=queue0.peek().waitingTime=queue0.peek().turnaroundTime-queue0.peek().burstTime;
+					queue0.peek().responseTime=queue0.peek().waitingTime-arriv;
+					
+					
+				}
+				System.out.println("\n\t\tAfter entering queue 1\n");
+				System.out.println("Process "+queue0.peek().processName +" informations: " +"\nProcess burst time  "+queue0.peek().burstTime
+						+"\nProcess turnaround time  "+queue0.peek().turnaroundTime +"\nProcess waiting time  "+queue0.peek().waitingTime
+						+"\nProcess remaining time  "+queue0.peek().remainingTime+"\nProcess response time  "+queue0.peek().responseTime);
+			            System.out.println("\n+++++\n");
+			            
+				
+			}else {
+				
+				if(i==0) {
+					
+					queue0.peek().remainingTime=queue0.peek().burstTime-8;
+					preEndTime=queue0.peek().endTime=8;
+					total_burst_forEach+=preTurnaroundTime=queue0.peek().turnaroundTime=8;
+					queue0.peek().responseTime=queue0.peek().arrivalTime;
+					queue1.add( new ProcessInfo(queue0.peek().processName,queue0.peek().arrivalTime,queue0.peek().burstTime,queue0.peek().remainingTime,queue0.peek().endTime));
+					
+					
+					
+				}else {
+					
+					totalWait1+=queue0.peek().waitingTime=preTurnaroundTime;
+					preEndTime=queue0.peek().endTime=preEndTime+8;
+					total_burst_forEach+=preTurnaroundTime=queue0.peek().turnaroundTime=queue0.peek().endTime;
+					queue0.peek().remainingTime=queue0.peek().burstTime-8;
+					queue0.peek().responseTime=queue0.peek().waitingTime-queue0.peek().responseTime;
+					queue1.add( new ProcessInfo(queue0.peek().processName,queue0.peek().arrivalTime,queue0.peek().burstTime,queue0.peek().remainingTime));
+					
+					
+
+				}
+				
+				count_Q1++;
+				flag=1;
+				System.out.println("\n\t\tAfter entering queue 1\n");
+				System.out.println("Process "+queue0.peek().processName +" informations: " +"\nProcess burst time  "+queue0.peek().burstTime
+						+"\nProcess turnaround time  "+queue0.peek().turnaroundTime +"\nProcess waiting time  "+queue0.peek().waitingTime
+						+"\nProcess remaining time  "+queue0.peek().remainingTime+"\nProcess response time  "+queue0.peek().responseTime);
+			            System.out.println("\n+++++\n");				
+			}
+			
+			queue0.remove();
+		}
+		
+		waitAndThroughputTime( totalWait1,  numOfProcess,  total_burst_forEach);
+		total_burst_forEach=0;
+		
+		return flag;
+		
+	}
+	public static int secondQueue(int count_Q1) {
+		for(int i=0;i<count_Q1;i++) {
+			
+			System.out.println("Process "+queue1.peek().processName +" informations: " +"\nProcess burst time  "+queue1.peek().burstTime
+					+"\nProcess turnaround time  "+queue1.peek().turnaroundTime +"\nProcess waiting time  "+queue1.peek().waitingTime
+					+"\nProcess remaining time  "+queue1.peek().remainingTime+"\nProcess response time  "+queue1.peek().responseTime);
+		            System.out.println("\n+++++\n");
+		           
+			if ((queue1.peek().remainingTime)<=16) {
+				if(i==0) {
+					total_burst_forEach+=preTurnaroundTime=queue1.peek().turnaroundTime=queue1.peek().remainingTime;
+					preEndTime=queue1.peek().endTime=queue1.peek().remainingTime;
+					queue1.peek().waitingTime=0;
+					queue1.peek().remainingTime=0;
+					queue1.peek().responseTime=queue1.peek().arrivalTime;
+					
+					
+				}else {
+					arriv=queue1.peek().arrivalTime;
+					queue1.peek().arrivalTime=0;
+					preEndTime=queue1.peek().endTime=preEndTime+queue1.peek().remainingTime;
+					totalWait2+=queue1.peek().waitingTime=preTurnaroundTime;
+					total_burst_forEach+=preTurnaroundTime=queue1.peek().turnaroundTime=queue1.peek().endTime-queue1.peek().arrivalTime;
+					queue1.peek().remainingTime=0;
+					queue1.peek().responseTime=queue1.peek().waitingTime-queue1.peek().arrivalTime;
+				}
+				System.out.println("\n\t\tAfter entering queue 2\n");
+				System.out.println("Process "+queue1.peek().processName +" informations: " +"\nProcess burst time  "+queue1.peek().burstTime
+						+"\nProcess turnaround time  "+queue1.peek().turnaroundTime +"\nProcess waiting time  "+queue1.peek().waitingTime
+						+"\nProcess remaining time  "+queue1.peek().remainingTime+"\nProcess response time  "+queue1.peek().responseTime);
+			            System.out.println("\n+++++\n");
+			            
+		}else {
+			
+			if(i==0) {
+				
+				queue1.peek().remainingTime=queue1.peek().remainingTime-16;
+				preEndTime=queue1.peek().endTime=16;
+				queue1.peek().responseTime=queue1.peek().arrivalTime;
+				total_burst_forEach+=preTurnaroundTime=queue1.peek().turnaroundTime=16;
+				queue2.add( new ProcessInfo(queue1.peek().processName,queue1.peek().arrivalTime,queue1.peek().burstTime,queue1.peek().remainingTime,queue1.peek().endTime));
+				
+			}else {
+				
+				totalWait2+=queue1.peek().waitingTime=preTurnaroundTime;
+				queue1.peek().responseTime=queue1.peek().waitingTime-queue1.peek().arrivalTime;
+				preEndTime=queue1.peek().endTime=preEndTime+16;
+				total_burst_forEach+=preTurnaroundTime=queue1.peek().turnaroundTime=queue1.peek().endTime;
+				queue1.peek().remainingTime=queue1.peek().remainingTime-16;
+				if(queue1.peek().remainingTime<0) {
+					queue1.peek().remainingTime=0;
+				}
+				queue2.add( new ProcessInfo(queue1.peek().processName,queue1.peek().arrivalTime,queue1.peek().burstTime,queue1.peek().remainingTime));
+				
+				
+				
+			}
+			count_Q2++;
+			flag=2;
+			System.out.println("\n\t\tAfter entering queue 2\n");
+			System.out.println("Process "+queue1.peek().processName +" informations: " +"\nProcess burst time  "+queue1.peek().burstTime
+					+"\nProcess turnaround time  "+queue1.peek().turnaroundTime +"\nProcess waiting time  "+queue1.peek().waitingTime
+					+"\nProcess remaining time  "+queue1.peek().remainingTime+"\nProcess response time  "+queue1.peek().responseTime);
+		            System.out.println("\n+++++\n");
+
+			}
+			queue1.remove();
+		}
+		
+		waitAndThroughputTime(totalWait2, count_Q1, total_burst_forEach);
+		total_burst_forEach=0;
+		
+		
+		return flag;
+	}
+	public static void thirdQueue(int count_Q2) {
+		for(int i=0;i<count_Q2;i++) {
+			
+			System.out.println("Process "+queue2.peek().processName +" informations: " 
+		            +"\nProcess burst time  "+queue2.peek().burstTime+"\nProcess turnaround time  "+queue2.peek().turnaroundTime
+		            +"\nProcess waiting time  "+queue2.peek().waitingTime+"\nProcess remaining time  "+queue2.peek().remainingTime
+		            +"\nProcess response time  "+queue2.peek().responseTime);
+			if(i==0) {
+				
+				total_burst_forEach+=preTurnaroundTime=queue2.peek().turnaroundTime=queue2.peek().remainingTime;
+				preEndTime=queue2.peek().endTime=queue2.peek().remainingTime;
+				queue2.peek().waitingTime=0;
+				queue2.peek().remainingTime=0;
+				queue2.peek().responseTime=queue2.peek().arrivalTime;
+				
+				
+			}else {
+				arriv=queue2.peek().arrivalTime;
+				queue2.peek().arrivalTime=0;
+				preEndTime=queue2.peek().endTime=preEndTime+queue2.peek().remainingTime;
+				totalWait3+=queue2.peek().waitingTime=preTurnaroundTime;
+				total_burst_forEach+=preTurnaroundTime=queue2.peek().turnaroundTime=queue2.peek().endTime-queue2.peek().arrivalTime;
+				queue2.peek().remainingTime=0;
+				queue2.peek().responseTime=queue2.peek().waitingTime-arriv;
+				
+			}
+			System.out.println("\n\t\tAfter entering queue 3\n");
+			System.out.println("Process "+queue2.peek().processName +" informations: " 
+		            +"\nProcess burst time  "+queue2.peek().burstTime+"\nProcess turnaround time  "+queue2.peek().turnaroundTime
+		            +"\nProcess waiting time  "+queue2.peek().waitingTime+"\nProcess remaining time  "+queue2.peek().remainingTime
+		            +"\nProcess response time   "+queue2.peek().responseTime);
+			System.out.println("\n+++++\n");
+			queue2.remove();
+			
+		}
+		waitAndThroughputTime(totalWait3, count_Q2, total_burst_forEach);
+		
+	}
+	public static void waitAndThroughputTime(int x, int y, int z) {
+		System.out.println("average waiting time for the current queue: "+(x/(double)(y)));
+		System.out.println("throughput time for the current queue: "+(y/(double)(z)));
+	}
+
+}
